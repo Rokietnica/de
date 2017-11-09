@@ -14,7 +14,7 @@
 
     input[type=button], input[type=submit] {
         border: none;
-        background: #E91E63;
+        background: #03A9F4;
         color: white;
         text-transform: uppercase;
         font-weight: 600;
@@ -23,6 +23,14 @@
         border-radius: 100px;
         margin: auto;
         display: block;
+    }
+
+    body#y input[type=button], body#y input[type=submit] {
+        background: #F44336;
+    }
+
+    body#n input[type=button], body#n input[type=submit] {
+        background: #4CAF50;
     }
 
     #correct, #incorrect, #answer, #left {
@@ -613,11 +621,13 @@
 	
         if (ans == wn || (iu && ans.toLowerCase() == wn.toLowerCase())) {
             p++;
+            document.body.id = 'y';
             delete d[wnk];
             us();
 
         } else {
             m++;
+            document.body.id = 'n';
             us();
         }
 
