@@ -1,63 +1,73 @@
-<title>Hail.</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400,600|Rozha+One" rel="stylesheet">
-<style>
-    *:focus {
-        outline: none;
-    }
+<html>
+<head>
+    <title>Hail.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600|Rozha+One" rel="stylesheet">
+    <style>
+        *:focus {
+            outline: none;
+        }
 
-    label {
-        display: block;
-	padding: 15px 0;
-    }
+        label {
+            display: block;
+            padding: 15px 0;
+        }
 
-    input[type=button], input[type=submit] {
-        border: none;
-        background: #03A9F4;
-        color: white;
-        text-transform: uppercase;
-        font-weight: 600;
-        font-size: 14px;
-        padding: 8px 15px;
-        border-radius: 100px;
-        margin: auto;
-        display: block;
-    }
+        input[type=button], input[type=submit] {
+            transition: background .1s ease-in-out;
+            border: none;
+            background: #03A9F4;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 100px;
+            margin: auto;
+            display: block;
+        }
 
-    body#y input[type=button], body#y input[type=submit] {
-        background: #4CAF50;
-    }
+        body#y input[type=button], body#y input[type=submit] {
+            background: #4CAF50;
+        }
 
-    body#n input[type=button], body#n input[type=submit] {
-        background: #F44336;
-    }
+        body#n input[type=button], body#n input[type=submit] {
+            background: #F44336;
+        }
 
-    #correct, #incorrect, #answer, #left {
-        font-weight: 600;
-    }
-</style>
+        #correct, #incorrect, #answer, #left {
+            font-weight: 600;
+        }
+    </style>
+</head>
 <body style="font-family: 'Montserrat', sans-serif; background: #F3F3F3; max-width: 800px; margin: auto;">
 <div id="select" style="background: white; margin: 15px; padding: 15px; box-shadow: 3px 3px 8px rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.03);"></div>
 <div id="game" style="background: white; margin: 15px; padding: 15px;box-shadow: 3px 3px 8px rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.03); display: none;">
-    <div id="word" style="text-align: center; font-size: 24px; margin-bottom: 10px; weight: 600; text-transform: capitalize; font-family: 'Rozha One'">WORD</div>
+    <div id="word" style="text-align: center; font-size: 24px; margin-bottom: 10px; weight: 600; text-transform: capitalize; font-family: 'Rozha One'">
+        WORD
+    </div>
     <form onsubmit="c(); return false;">
-        <input type="text" id="word-i" spellcheck="false" autocomplete="off" style="background: rgba(0,0,0,.06); border: none; border-radius: 100px; margin: auto; display: block; max-width: 360px; width: 100%; padding: 10px 20px; border: 1px solid rgba(0,0,0,.03)" autofocus>
+        <input type="text" id="word-i" spellcheck="false" autocomplete="off" style="background: rgba(0,0,0,.06); border: none; border-radius: 100px; margin: auto; display: block; max-width: 360px; width: 100%; padding: 10px 20px; border: 1px solid rgba(0,0,0,.03)" autofocus="">
         <div style="display: flex; margin-top: 15px; align-items: center; justify-content: center">
             <input type="button" value="ä" onclick="f(this.value)" style="margin: 5px;">
             <input type="button" value="ö" onclick="f(this.value)" style="margin: 5px;">
             <input type="button" value="ü" onclick="f(this.value)" style="margin: 5px;">
             <input type="button" value="ß" onclick="f(this.value)" style="margin: 5px;">
         </div>
-        <input type="submit" value="Sprawdź" style="margin-top: 15px;">
+        <div style="display: flex; margin-top: 15px; align-items: center; justify-content: center">
+            <input type="submit" value="Sprawdź" style="margin: 5px;">
+            <input type="button" value="Następne" style="margin: 5px; background: rgba(0,0,0,.06); color: #333;" onclick="n()">
+        </div>
     </form>
     <div style="text-align: center">Poprawne odpowiedzi: <span id="correct">0</span></div>
     <div style="text-align: center">Błędne odpowiedzi: <span id="incorrect">0</span></div>
     <div style="text-align: center">Poprawna odpowiedź: <span id="answer">-</span></div>
     <div style="text-align: center">Pozostało: <span id="left">0</span></div>
-	<label style="display: block; text-align: center; margin-top: 15px;"><input type="checkbox" id="iu" checked> Nie sprawdzaj wielkości znaków</label>
+    <label style="display: block; text-align: center; margin-top: 15px;"><input type="checkbox" id="iu" checked=""> Nie sprawdzaj wielkości
+        znaków</label>
 </div>
-</body>
+
 
 <script>
     var a = {
@@ -543,8 +553,7 @@
     var wnk = '';
     var p = 0;
     var m = 0;
-    var troll = ["dQw4w9WgXcQ", "68ugkg9RePc", "aAQdtOwdI80", "4kHl4FoK1Ys", "eNvUS-6PTbs", "djV11Xbc914", "PGNiXGX2nLU"];
-    
+
 
     window.onload = function () {
         var k = Object.keys(a);
@@ -566,9 +575,9 @@
         document.getElementById('select').remove();
         document.getElementById('game').style.display = 'block';
 
-        document.onkeydown = function(e) {
+        document.onkeydown = function (e) {
             if (!e.altKey) return;
-            switch(e.key) {
+            switch (e.key) {
                 case 's':
                     f('ß');
                     break;
@@ -586,14 +595,14 @@
 
         for (var i = 0; i < se.length; i++)
             Object.assign(d, a[Object.keys(a)[se[i]]]);
-		
-		us();
+
+        us();
         sw();
     }
 
     function f(a) {
         document.getElementById('word-i').value += a;
-	document.getElementById('word-i').focus();
+        document.getElementById('word-i').focus();
     }
 
     function sw() {
@@ -607,7 +616,7 @@
         var r = k[k.length * Math.random() << 0];
 
         wn = d[r];
-		wnk = r;
+        wnk = r;
         document.getElementById('word').innerHTML = r;
 
     }
@@ -617,19 +626,18 @@
         var ans = document.getElementById('word-i').value;
         document.getElementById('word-i').value = '';
         var iu = document.getElementById('iu').checked;
-	
+
         if (ans == wn || (iu && ans.toLowerCase() == wn.toLowerCase())) {
             p++;
             document.body.id = 'y';
             delete d[wnk];
-            us();
-
+            
         } else {
             m++;
             document.body.id = 'n';
-            us();
         }
 
+        us();
         sw();
     }
 
@@ -639,4 +647,13 @@
         document.getElementById('answer').innerHTML = wn;
         document.getElementById('left').innerHTML = Object.keys(d).length;
     }
+
+    function n() {
+        wn = '-';
+        us();
+        document.body.id = '';
+        sw();
+    }
 </script>
+</body>
+</html>
