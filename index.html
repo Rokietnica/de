@@ -64,8 +64,14 @@
     <div style="text-align: center">Błędne odpowiedzi: <span id="incorrect">0</span></div>
     <div style="text-align: center">Poprawna odpowiedź: <span id="answer">-</span></div>
     <div style="text-align: center">Pozostało: <span id="left">0</span></div>
-    <label style="display: block; text-align: center; margin-top: 15px;"><input type="checkbox" id="iu" checked=""> Nie sprawdzaj wielkości
-        znaków</label>
+    <label style="display: block; text-align: center;">
+        <input type="checkbox" id="iu" checked="">
+        Nie sprawdzaj wielkości znaków
+    </label>
+    <label style="display: block; text-align: center;">
+        <input type="checkbox" id="id" checked="">
+        Nie sprawdzaj znaków diaktrycznych (ä, ö, ü, ß)
+    </label>
 </div>
 
 
@@ -626,12 +632,20 @@
         var ans = document.getElementById('word-i').value;
         document.getElementById('word-i').value = '';
         var iu = document.getElementById('iu').checked;
+        var id = document.getElementById('id').checked;
 
-        if (ans == wn || (iu && ans.toLowerCase() == wn.toLowerCase())) {
+        var wnc = wn;
+
+        if (id) {
+            ans = ans.replace('ä', 'a').replace('ö', 'o').replace('ü', 'u').replace('ß', 'ss');
+            wnc = wnc.replace('ä', 'a').replace('ö', 'o').replace('ü', 'u').replace('ß', 'ss');
+        }
+
+        if (ans == wnc || (iu && ans.toLowerCase() == wnc.toLowerCase())) {
             p++;
             document.body.id = 'y';
             delete d[wnk];
-            
+
         } else {
             m++;
             document.body.id = 'n';
