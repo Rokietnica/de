@@ -39,6 +39,8 @@
     <div style="text-align: center">Poprawne odpowiedzi: <span id="correct">0</span></div>
     <div style="text-align: center">Błędne odpowiedzi: <span id="incorrect">0</span></div>
     <div style="text-align: center">Poprawna odpowiedź: <span id="answer">-</span></div>
+    <div style="text-align: center">Pozostało: <span id="left">0</span></div>
+	<label style="display: block; text-align: center; margin-top: 15px;"><input type="checkbox" id="iu" checked> Nie sprawdzaj wielkości znaków</label>
 </div>
 </body>
 
@@ -523,6 +525,7 @@
     var se = [];
     var d = {};
     var wn = '';
+	var wnk = '';
     var p = 0;
     var m = 0;
 
@@ -548,7 +551,8 @@
 
         for (var i = 0; i < se.length; i++)
             Object.assign(d, a[Object.keys(a)[se[i]]]);
-
+		
+		us();
         sw();
     }
 
@@ -566,18 +570,21 @@
         }
         var r = k[k.length * Math.random() << 0];
 
-        wn = d[r].toLowerCase();
+        wn = d[r];
+		wnk = r;
         document.getElementById('word').innerHTML = r;
 
     }
 
     function c() {
-        var ans = document.getElementById('word-i').value.toLowerCase();
+        var ans = document.getElementById('word-i').value;
         document.getElementById('word-i').value = '';
-        if (ans == wn) {
+		var iu = document.getElementById('iu').checked;
+		
+        if (ans == wn || (iu && ans.toLowerCase() == wn.toLowerCase())) {
             p++;
+            delete d[wnk];
             us();
-            delete d[wn];
 
         } else {
             m++;
@@ -591,5 +598,6 @@
         document.getElementById('correct').innerHTML = p;
         document.getElementById('incorrect').innerHTML = m;
         document.getElementById('answer').innerHTML = wn;
+        document.getElementById('left').innerHTML = Object.keys(d).length;
     }
 </script>
