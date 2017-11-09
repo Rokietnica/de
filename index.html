@@ -556,6 +556,24 @@
         document.getElementById('select').remove();
         document.getElementById('game').style.display = 'block';
 
+        document.onkeydown = function(e) {
+            if (!e.altKey) return;
+            switch(e.key) {
+                case 's':
+                    f('ß');
+                    break;
+                case 'o':
+                    f('ö');
+                    break;
+                case 'u':
+                    f('ü');
+                    break;
+                case 'a':
+                    f('ä');
+                    break;
+            }
+        };
+
         for (var i = 0; i < se.length; i++)
             Object.assign(d, a[Object.keys(a)[se[i]]]);
 		
