@@ -543,6 +543,7 @@
     var wnk = '';
     var p = 0;
     var m = 0;
+    var troll = ["dQw4w9WgXcQ", "68ugkg9RePc", "aAQdtOwdI80", "4kHl4FoK1Ys", "eNvUS-6PTbs", "djV11Xbc914", "PGNiXGX2nLU"];
     
 
     window.onload = function () {
@@ -613,7 +614,7 @@
 
     function c() {
         if (Math.floor(Math.random() * 10000) + 1 == 666)
-            window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            window.location.href = "https://www.youtube.com/watch?v=" + troll[Math.floor(Math.random()*troll.length)];
 
         var ans = document.getElementById('word-i').value;
         document.getElementById('word-i').value = '';
