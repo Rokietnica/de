@@ -1,0 +1,677 @@
+<html>
+<head>
+    <title>Hail.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600|Rozha+One" rel="stylesheet">
+    <style>
+        *:focus {
+            outline: none;
+        }
+
+        label {
+            display: block;
+            padding: 15px 0;
+        }
+
+        input[type=button], input[type=submit] {
+            transition: background .1s ease-in-out;
+            border: none;
+            background: #03A9F4;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 100px;
+            margin: auto;
+            display: block;
+        }
+
+        body#y input[type=button], body#y input[type=submit] {
+            background: #4CAF50;
+        }
+
+        body#n input[type=button], body#n input[type=submit] {
+            background: #F44336;
+        }
+
+        #correct, #incorrect, #answer, #left {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body style="font-family: 'Montserrat', sans-serif; background: #F3F3F3; max-width: 800px; margin: auto;">
+<div id="select" style="background: white; margin: 15px; padding: 15px; box-shadow: 3px 3px 8px rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.03);"></div>
+<div id="game" style="background: white; margin: 15px; padding: 15px;box-shadow: 3px 3px 8px rgba(0,0,0,.03); border: 1px solid rgba(0,0,0,.03); display: none;">
+    <div id="word" style="text-align: center; font-size: 24px; margin-bottom: 10px; weight: 600; text-transform: capitalize; font-family: 'Rozha One'">
+        WORD
+    </div>
+    <form onsubmit="c(); return false;">
+        <input type="text" id="word-i" spellcheck="false" autocomplete="off" style="background: rgba(0,0,0,.06); border: none; border-radius: 100px; margin: auto; display: block; max-width: 360px; width: 100%; padding: 10px 20px; border: 1px solid rgba(0,0,0,.03)" autofocus="">
+        <div style="display: flex; margin-top: 15px; align-items: center; justify-content: center">
+            <input type="button" value="ä" onclick="f(this.value)" style="margin: 5px;">
+            <input type="button" value="ö" onclick="f(this.value)" style="margin: 5px;">
+            <input type="button" value="ü" onclick="f(this.value)" style="margin: 5px;">
+            <input type="button" value="ß" onclick="f(this.value)" style="margin: 5px;">
+        </div>
+        <div style="display: flex; margin-top: 15px; align-items: center; justify-content: center">
+            <input type="submit" value="Sprawdź" style="margin: 5px;">
+            <input type="button" value="Następne" style="margin: 5px; background: rgba(0,0,0,.06); color: #333;" onclick="n()">
+        </div>
+    </form>
+    <div style="text-align: center">Poprawne odpowiedzi: <span id="correct">0</span></div>
+    <div style="text-align: center">Błędne odpowiedzi: <span id="incorrect">0</span></div>
+    <div style="text-align: center">Poprawna odpowiedź: <span id="answer">-</span></div>
+    <div style="text-align: center">Pozostało: <span id="left">0</span></div>
+    <label style="display: block; text-align: center;">
+        <input type="checkbox" id="iu" checked="">
+        Nie sprawdzaj wielkości znaków
+    </label>
+    <label style="display: block; text-align: center;">
+        <input type="checkbox" id="id" checked="">
+        Nie sprawdzaj znaków diaktrycznych (ä, ö, ü, ß)
+    </label>
+</div>
+
+
+<script>
+    var a = {
+        "WOHNORT - MIEJSCE ZAMIESZKANIA": {
+            "stare budownictwo": "Altbau",
+            "mieszkanie w starym budownictwie": "Altbauwohnung",
+            "stare miasto": "Altstadt",
+            "dom bli\u017aniak": "Doppelhaus",
+            "wie\u015b (D)": "Dorf",
+            "mieszkanie w\u0142asno\u015bciowe": "Eigentumswohnung",
+            "dom jednorodzinny": "Einfamilienhaus",
+            "budynek": "Geb\u00e4ude",
+            "okolica": "Gegend",
+            "gmina": "Gemeinde",
+            "du\u017ce miasto": "Gro\u00dfstadt",
+            "teren zielony": "Gr\u00fcnfl\u00e4che",
+            "stolica": "Hauptstadt",
+            "dom": "Haus",
+            "wie\u017cowiec": "Hochhaus",
+            "chata, cha\u0142upa": "H\u00fctte",
+            "ma\u0142e miasto": "Kleinstadt",
+            "wie\u015b (L)": "Land",
+            "dom wielorodzinny": "Mehrfamilienhaus",
+            "kamienica": "Mietshaus",
+            "mieszkanie wynajmowane": "Mietwohnung",
+            "nowe budownictwo": "Neubau",
+            "miejscowo\u015b\u0107": "Ort",
+            "dom szeregowy": "Reihenhaus",
+            "osiedle": "Siedlung",
+            "miasto": "Stadt",
+            "dzielnica": "Stadtviertel",
+            "ulica": "Stra\u00dfe",
+            "willa": "Villa",
+            "dom letniskowy": "Wochenendhaus",
+            "blok mieszkalny": "Wohnblock",
+            "wsp\u00f3lnota mieszkaniowa": "Wohngemeinschaft",
+            "osiedle mieszkaniowe": "Wohnsiedlung",
+            "mieszkanie": "Wohnung",
+            "drapacz chmur": "Wolkenkratzer",
+            "na wsi": "auf dem Land",
+            "na obrze\u017cach miasta": "am Stadtrand",
+            "w centrum miasta": "im Stadtzentrum",
+            "na pierwszym pi\u0119trze": "im ersten Stock",
+            "na drugim pi\u0119trze": "im zweiten Stock",
+            "w pobli\u017cu": "in der N\u00e4he von"
+        },
+        "WOHNR\u00c4UME - POMIESZCZENIA MIESZKALNE": {
+            "gabinet": "Arbeitszimmer",
+            "winda": "Aufzug",
+            "wyjazd": "Ausfahrt",
+            "wyj\u015bcie": "Ausgang",
+            "\u0142azienka": "Badezimmer",
+            "balkon": "Balkon",
+            "poddasze": "Dachgeschoss",
+            "wjazd": "Einfahrt",
+            "wej\u015bcie": "Eingang",
+            "parter": "Erdgeschoss",
+            "jadalnia": "Esszimmer",
+            "korytarz": "Flur",
+            "gara\u017c": "Garage",
+            "pok\u00f3j go\u015bcinny": "G\u00e4stezimmer",
+            "pomieszczenie do uprawiania hobby": "Hobbyraum",
+            "piwnica": "Keller",
+            "pok\u00f3j dzieci\u0119cy": "Kinderzimmer",
+            "kuchnia": "K\u00fcche",
+            "pomieszczenie": "Raum",
+            "sypialnia": "Schlafzimmer",
+            "pi\u0119tro": "Stock",
+            "taras": "Terrasse",
+            "toaleta": "Toilette",
+            "schody": "Treppe",
+            "klatka schodowa": "Treppenhaus",
+            "pok\u00f3j dzienny": "Wohnzimmer",
+            "pok\u00f3j": "Zimmer",
+            "sufit": "Decke",
+            "r\u00f3g": "Ecke",
+            "okno": "Fenster",
+            "parapet": "Fensterbrett",
+            "pod\u0142oga": "Fu\u00dfboden",
+            "\u015brodek": "Mitte",
+            "drzwi": "T\u00fcr",
+            "\u015bciana": "Wand"
+        },
+        "EINRICHTUNG - WYPOSA\u017bENIE DOMU": {
+            "piekarnik": "Backofen",
+            "wanna": "Badewanne",
+            "\u0142\u00f3\u017cko": "Bett",
+            "obraz": "Bild",
+            "rega\u0142 na ksi\u0105\u017cki": "B\u00fccherregal",
+            "odtwarzacz p\u0142yt CD": "CD-Player",
+            "komputer": "Computer",
+            "tapczan": "Couch",
+            "prysznic": "Dusche",
+            "odtwarzacz p\u0142yt DVD": "DVD-Player",
+            "kuchenka elektryczna": "Elektroherd",
+            "telewizor": "Fernseher",
+            "p\u0142ytka, kafelek": "Fliese",
+            "glazura": "Fliesen",
+            "firanka": "Gardine",
+            "zmywarka (1)": "Geschirrsp\u00fcler",
+            "zmywarka (2)": "Geschirrsp\u00fclmaschine",
+            "zmywarka (3)": "Sp\u00fclmaschine",
+            "wieszak": "Haken",
+            "urz\u0105dzenie domowe": "Hausger\u00e4t",
+            "kaloryfer": "Heizk\u00f6rper",
+            "pod\u0142\u0105czenie do Internetu": "Internetanschluss",
+            "\u017caluzja": "Jalousie",
+            "telewizja kablowa": "Kabelfernsehen",
+            "ekspres do kawy": "Kaffeemaschine",
+            "wieszak na ubrania": "Kleiderhaken",
+            "klimatyzacja": "Klimaanlage",
+            "komoda": "Kommode",
+            "lod\u00f3wka": "K\u00fchlschrank",
+            "lampa": "Lampe",
+            "mikrofal\u00f3wka": "Mikrowelle",
+            "meble": "M\u00f6bel",
+            "kosz na \u015bmieci": "M\u00fclleimer",
+            "plakat": "Poster",
+            "rega\u0142": "Regal",
+            "roleta": "Rollladen",
+            "szafa": "Schrank",
+            "biurko": "Schreibtisch",
+            "fotel": "Sessel",
+            "sofa": "Sofa",
+            "lustro": "Spiegel",
+            "domofon": "Sprechanlage",
+            "zlewozmywak": "Sp\u00fclbecken",
+            "odkurzacz": "Staubsauger",
+            "wie\u017ca stereo": "Stereoanlage",
+            "pr\u0105d": "Strom",
+            "krzes\u0142o": "Stuhl",
+            "tapeta": "Tapete",
+            "dywan": "Teppich",
+            "wyk\u0142adzina": "Teppichboden",
+            "st\u00f3\u0142": "Tisch",
+            "zas\u0142ona": "Vorhang",
+            "umywalka": "Waschbecken",
+            "pralka": "Waschmaschine",
+            "suszarka do bielizny": "W\u00e4schetrockner",
+            "centralne ogrzewanie": "Zentralheizung"
+        },
+        "SONSTIGES - INNE": {
+            "wyposa\u017ca\u0107": "ausstatten",
+            "wyprowadza\u0107 si\u0119": "ausziehen",
+            "ogrzewa\u0107": "beheizen",
+            "urz\u0105dza\u0107, meblowa\u0107": "einrichten",
+            "wprowadza\u0107 si\u0119": "einziehen",
+            "tworzy\u0107, budowa\u0107": "gestalten",
+            "meblowa\u0107": "m\u00f6blieren",
+            "remontowa\u0107": "renovieren",
+            "malowa\u0107": "streichen",
+            "tapetowa\u0107": "tapezieren",
+            "dzieli\u0107 z": "teilen mit",
+            "przeprowadza\u0107 si\u0119": "umziehen",
+            "zmienia\u0107": "wechseln",
+            "staromodny": "altmodisch",
+            "wygodny": "bequem",
+            "o\u015bwietlony": "beleuchtet",
+            "szeroki": "breit",
+            "ciemny": "dunkel",
+            "w\u0105ski, ciasny": "eng",
+            "przytulny": "gem\u00fctlich",
+            "niegustowny": "geschmacklos",
+            "zadbany": "gepflegt",
+            "przestronny": "ger\u00e4umig",
+            "gustowny": "geschmackvoll",
+            "jasny": "hell",
+            "wysoki": "hoch",
+            "komfortowy": "komfortabel",
+            "luksusowy": "luxuri\u00f6s",
+            "umeblowany": "m\u00f6bliert",
+            "nowoczesny": "modern",
+            "niski": "niedrig",
+            "ogromny": "riesig",
+            "rustykalny": "rustikal",
+            "w\u0105ski": "schmal",
+            "zmys\u0142owy": "sinnlich",
+            "malutki": "winzig"
+        },
+        "WOHNGEGEND - OKOLICA ZAMIESZKANIA": {
+            "Okolica jest...": "Die Gegend ist...",
+            "biedny": "arm",
+            "niebezpieczny": "gef\u00e4hrlich",
+            "zielony": "gr\u00fcn",
+            "brzydki": "h\u00e4sslich",
+            "nerwowy": "hektisch",
+            "nudny": "langweilig",
+            "g\u0142o\u015bny": "laut",
+            "bogaty": "reich",
+            "cichy": "ruhig",
+            "czysty": "sauber",
+            "brudny": "schmutzig",
+            "\u0142adny": "sch\u00f6n",
+            "bezpieczny": "sicher",
+            "S\u0105siad jest...": "Der Nachbar ist...",
+            "arogancki": "arrogant",
+            "mi\u0142y": "nett",
+            "ch\u0119tny do pomocy": "hilfsbereit",
+            "samolubny, egoistyczny": "selbsts\u00fcchtig",
+            "sympatyczny": "sympathisch",
+            "nietaktowny": "taktlos",
+            "taktowny": "taktvoll"
+        },
+        "IMMOBILIEN - NIERUCHOMO\u015aCI": {
+            "og\u0142oszenie": "Anzeige",
+            "w\u0142a\u015bciciel": "Eigent\u00fcmer",
+            "nieruchomo\u015b\u0107": "Immobilie",
+            "czynsz podstawowy bez koszt\u00f3w dodatkowych": "Kaltmiete",
+            "kupowa\u0107": "kaufen",
+            "kupuj\u0105cy": "K\u00e4ufer",
+            "cena kupna": "Kaufpreis",
+            "kaucja": "Kaution",
+            "wypowiada\u0107": "k\u00fcndigen",
+            "wsp\u00f3\u0142lokator": "Mietbewohner",
+            "czynsz": "Miete",
+            "wynajmowa\u0107 (od kogo\u015b)": "mieten",
+            "najemca, lokator": "Mieter",
+            "koszty najmu": "Mietkosten",
+            "umowa najmu": "Mietvertrag",
+            "koszty eksploatacyjne": "Nebenkosten",
+            "osobno, oddzielnie": "separat",
+            "sublokator, podnajemca": "Untermieter",
+            "sprzedawa\u0107": "verkaufen",
+            "wynajmowa\u0107 (komu\u015b)": "vermieten",
+            "wynajmuj\u0105cy, odnajmuj\u0105cy": "Vermieter",
+            "czynsz ca\u0142kowity z kosztami eksploatacyjnymi": "Warmmiete",
+            "powierzchnia mieszkalna": "Wohnfl\u00e4che",
+            "grupa os\u00f3b wsp\u00f3lnie wynajmuj\u0105ca dom lub mieszkanie": "Wohngemeinschaft",
+            "oferta mieszkaniowa": "Wohnungsangebot",
+            "rynek mieszkaniowy": "Wohnungsmarkt"
+        },
+        "BILDUNG - EDUKACJA": {
+            "wykszta\u0142cenie": "Schulbildung",
+            "nie odbywa\u0107 si\u0119, wypada\u0107": "ausfallen",
+            "szko\u0142a zawodowa": "Berufsschule",
+            "edukacja": "Bildung",
+            "egzamin dyplomowy": "Diplompr\u00fcfung",
+            "szko\u0142a podstawowa": "Grundschule",
+            "gimnazjum": "Gymnasium",
+            "absolwent szko\u0142y wy\u017cszej": "Hochschulabsolvent",
+            "szko\u0142a wy\u017csza": "Hochschule",
+            "przedszkole": "Kindergarten",
+            "program nauczania": "Lehrplan",
+            "liceum (L)": "Lyzeum",
+            "liceum (O)": "Oberschule",
+            "liceum og\u00f3lnokszta\u0142c\u0105ce": "die allgemeinbildende Oberschule",
+            "rodzaj szko\u0142y": "Schulform",
+            "ocena szkolna": "Schulnote",
+            "system szkolnictwa": "Schulsystem",
+            "lata szkolne": "Schulzeit",
+            "szko\u0142a specjalna": "Sonderschule",
+            "szko\u0142a j\u0119zykowa": "Sprachenschule",
+            "znajomo\u015b\u0107 j\u0119zyka": "Sprachkenntnisse",
+            "studia": "Studium",
+            "technikum": "Technikum",
+            "uniwersytet": "Universit\u00e4t",
+            "lekcja": "Unterricht",
+            "zer\u00f3wka": "Vorschule"
+        },
+        "SCHULF\u00c4CHER - PRZEDMIOTY SZKOLNE": {
+            "biologia": "Biologie",
+            "chemia": "Chemie",
+            "j\u0119zyk niemiecki": "Deutsch",
+            "j\u0119zyk angielski": "Englisch",
+            "geografia": "Erdkunde",
+            "etyka": "Ethik",
+            "j\u0119zyk francuski": "Franz\u00f6sisch",
+            "j\u0119zyk obcy": "Fremdsprache",
+            "historia": "Geschichte",
+            "informatyka": "Informatik",
+            "godzina wychowawcza": "Klassenlehrerstunde",
+            "wiedza o kulturze": "Kulturwissenschaft",
+            "sztuka": "Kunst",
+            "\u0142acina": "Latein",
+            "ulubiony przedmiot": "Lieblingsfach",
+            "matematyka": "Mathematik",
+            "muzyka": "Musik",
+            "przedmiot obowi\u0105zkowy": "Pflichtfach",
+            "fizyka": "Physik",
+            "j\u0119zyk polski": "Polnisch",
+            "religia": "Religion",
+            "j\u0119zyk rosyjski": "Russisch",
+            "przedmiot szkolny": "Schulfach",
+            "nauka o spo\u0142ecze\u0144stwie": "Sozialkunde",
+            "j\u0119zyk hiszpa\u0144ski": "Spanisch",
+            "wf": "Sport",
+            "przedmiot fakultatywny": "Wahlpflichtfach",
+            "podstawy przedsi\u0119biorczo\u015bci": "Wirtschaftslehre"
+        },
+        "SCHULAUSSTATTUNG - WYPOSA\u017bENIE SZKO\u0141Y": {
+            "gabinet": "Arbeitszimmer",
+            "gabinet dyrektora": "das Arbeitszimmer des Schulleiters",
+            "atlas": "Atlas",
+            "\u0142awka": "Bank",
+            "rzutnik": "Beamer",
+            "o\u0142\u00f3wek": "Bleistift",
+            "ksi\u0105\u017cka": "Buch",
+            "kredka": "Buntstift",
+            "flamaster": "Filzstift",
+            "pi\u00f3ro": "F\u00fcller",
+            "globus": "Globus",
+            "zeszyt": "Heft",
+            "klasa": "Klasse",
+            "dziennik lekcyjny": "Klassenbuch",
+            "sala lekcyjna": "Klassenzimmer",
+            "klej": "Klebstoff",
+            "korytarz": "Korridor",
+            "kreda": "Kreide",
+            "d\u0142ugopis": "Kugelschreiber",
+            "mapa": "Landkarte",
+            "podr\u0119cznik": "Lehrbuch",
+            "pok\u00f3j nauczycielski": "Lehrerzimmer",
+            "gra edukacyjna": "Lernspiel",
+            "linijka": "Lineal",
+            "pi\u00f3rnik": "M\u00e4ppchen",
+            "mikroskop": "Mikroskop",
+            "segregator": "Ordner",
+            "gumka do \u015bcierania": "Radiergummi",
+            "plecak": "Rucksack",
+            "no\u017cyczki": "Schere",
+            "\u0142awka szkolna": "Schulbank",
+            "biblioteka szkolna": "Schulbibliothek",
+            "budynek szkolny": "Schulgeb\u00e4ude",
+            "sto\u0142\u00f3wka szkolna": "Schulmensa",
+            "pomieszczenie szkolne": "Schulraum",
+            "przybory szkolne": "Schulsachen",
+            "torba do szko\u0142y": "Schultasche",
+            "mundurek szkolny": "Schuluniform",
+            "g\u0105bka": "Schwamm",
+            "sekretariat": "Sekretariat",
+            "temper\u00f3wka": "Spitzer",
+            "str\u00f3j sportowy": "Sportanzug",
+            "sala gimnastyczna": "Sporthalle",
+            "boisko": "Sportplatz",
+            "god\u0142o pa\u0144stwowe": "Staatswappen",
+            "plan lekcji": "Stundenplan",
+            "tablica": "Tafel",
+            "kalkulator": "Taschenrechner",
+            "zakre\u015blacz": "Textmarker",
+            "korektor": "Tintenkiller",
+            "str\u00f3j gimnastyczny": "Turnzeug",
+            "ksi\u0105\u017cka \u0107wicze\u0144": "\u00dcbungsbuch",
+            "cyrkiel": "Zirkel"
+        },
+        "SCH\u00dcLER - UCZE\u0143": {
+            "zdawa\u0107 matur\u0119": "das Abitur machen",
+            "\u015bwiadectwo dojrza\u0142o\u015bci": "Abiturzeugnis",
+            "zdawa\u0107": "ablegen",
+            "uko\u0144czy\u0107": "abschlie\u00dfen",
+            "dodawa\u0107": "addieren",
+            "wszystko rozumie\u0107": "alles verstehen",
+            "nic nie rozumie\u0107": "nichts verstehen",
+            "uczy\u0107 si\u0119 wszystkiego o zwierz\u0119tach i ro\u015blinach": "alles \u00fcber Tiere und Pflanzen lernen",
+            "k\u00f3\u0142ko zainteresowa\u0144": "Arbeitsgemeinschaft",
+            "egzamin wst\u0119pny": "Aufnahmepr\u00fcfung",
+            "uwa\u017ca\u0107": "aufpassen",
+            "pisa\u0107 wypracowanie": "einen Aufsatz schreiben",
+            "wypada\u0107, nie odbywa\u0107 si\u0119": "ausfallen",
+            "opowiada\u0107 o": "berichten \u00fcber",
+            "bra\u0107 udzia\u0142 w": "sich beteiligen an",
+            "ubiega\u0107 si\u0119 o": "bewerben sich um",
+            "dzieli\u0107": "dividieren",
+            "rozczarowa\u0107": "entt\u00e4uschen",
+            "odpowiada\u0107 na pytania": "auf Fragen antworten",
+            "dostawa\u0107 z\u0142e oceny": "schlechte Noten bekommen",
+            "dostawa\u0107 dobre oceny": "gute Noten bekommen",
+            "zosta\u0107 przyj\u0119tym": "immatrikuliert werden",
+            "powtarza\u0107 klas\u0119": "die Klasse wiederholen",
+            "pisa\u0107 klas\u00f3wk\u0119": "eine Klassenarbeit schreiben",
+            "wycieczka klasowa": "Klassenfahrt",
+            "przewodnicz\u0105cy klasy": "Klassensprecher",
+            "wynik": "Leistung",
+            "mno\u017cy\u0107": "multiplizieren",
+            "potrzebowa\u0107 korepetycji": "Nachhilfe brauchen",
+            "ocena": "Zensur",
+            "zlikwidowa\u0107 oceny": "Noten abschaffen",
+            "robi\u0107 notatki": "sich Notizen machen",
+            "wkuwa\u0107": "pauken",
+            "kujon": "Pauker",
+            "kujonka": "Paukerin",
+            "przerwa": "Pause",
+            "egzamin": "Pr\u00fcfung",
+            "zdawa\u0107 egzamin": "eine Pr\u00fcfung bestehen",
+            "liczy\u0107": "rechnen",
+            "przygotowywa\u0107 si\u0119 regularnie do lekcji": "sich regelm\u00e4\u00dfig auf den Unterricht vorbereiten",
+            "zako\u0144czy\u0107 nauk\u0119": "den Schulabschluss machen",
+            "wycieczka szkolna": "Schulausflug",
+            "rzuca\u0107 szko\u0142\u0119": "die Schule aufgeben",
+            "wagarowa\u0107": "die Schule schw\u00e4nzen ",
+            "ucze\u0144": "Sch\u00fcler",
+            "wymiana uczniowska": "Sch\u00fcleraustausch",
+            "samorz\u0105d szkolny": "Sch\u00fclervertretung",
+            "\u015bwiadectwo szkolne": "Schulzeugnis",
+            "zosta\u0107 na drugi rok": "sitzen bleiben",
+            "\u015bci\u0105ga\u0107": "spicken",
+            "\u015bci\u0105gawka": "Spickzettel",
+            "rozpocz\u0105\u0107 studia": "das Studium aufnehmen",
+            "odejmowa\u0107": "subtrahieren",
+            "bra\u0107 dzia\u0142 w": "teilnehmen an",
+            "czyta\u0107 teksty": "Texte lesen",
+            "gimnastykowa\u0107 si\u0119": "turnen",
+            "\u0107wiczy\u0107": "\u00fcben",
+            "t\u0142umaczy\u0107": "\u00fcbersetzen",
+            "uwa\u017ca\u0107 na lekcji": "im Unterricht aufpassen",
+            "s\u0142ucha\u0107 na lekcji": "im Unterricht zuh\u00f6ren",
+            "oblewa\u0107": "verhauen",
+            "rysowa\u0107": "zeichnen",
+            "otrzyma\u0107 \u015bwiadectwo": "ein Zeugnis bekommen",
+            "s\u0142ucha\u0107": "zuh\u00f6ren",
+            "nieobecny": "abwesend",
+            "obecny": "anwesend",
+            "pracowity": "arbeitsam",
+            "uwa\u017cny": "aufmerksam",
+            "zdolny": "begabt",
+            "przeci\u0119tny": "mittelm\u00e4\u00dfig",
+            "leniwy": "faul",
+            "pilny": "flei\u00dfig",
+            "bezczelny": "frech",
+            "dobry z...": "gut in ...",
+            "porz\u0105dny": "ordentlich",
+            "z\u0142y": "schlecht",
+            "kiepski": "schlimm",
+            "s\u0142aby": "schwach",
+            "samodzielny": "selbst\u00e4ndig",
+            "ambitny": "strebsam",
+            "niezwracaj\u0105cy uwagi": "unauff\u00e4llig",
+            "zwracaj\u0105cy uwag\u0119": "auff\u00e4llig",
+            "niepunktualny": "unp\u00fcnktlich",
+            "punktualny": "p\u00fcnktlich",
+            "odpowiedzialny": "verantwortungsbewusst"
+        },
+        "LEHRER - NAUCZYCIEL": {
+            "odpytywa\u0107": "abfragen",
+            "stawia\u0107 wymagania": "Anforderungen stellen",
+            "napisa\u0107 \/ zapisywa\u0107": "anschreiben",
+            "zadawa\u0107": "aufgeben",
+            "ocenia\u0107": "benoten",
+            "opiekowa\u0107 si\u0119 kim\u015b": "betreuen",
+            "wyja\u015bnia\u0107": "erkl\u00e4ren",
+            "wychowywa\u0107": "erziehen",
+            "poprawia\u0107 b\u0142\u0119dy (k)": "Fehler korrigieren",
+            "poprawia\u0107 b\u0142\u0119dy (v)": "Fehler verbessern",
+            "stawia\u0107 pytania": "Fragen stellen",
+            "mie\u0107 cierpliwo\u015b\u0107": "Geduld haben",
+            "poprawia\u0107 klas\u00f3wki": "die Klassenarbeiten korrigieren",
+            "wychowawca": "Klassenlehrer",
+            "wychowawczyni": "Klassenlehrerin",
+            "sprawdza\u0107": "kontrollieren",
+            "nauczyciel": "Lehrer",
+            "nauczycielka": "Lehrerin",
+            "stawia\u0107 ocen\u0119": "eine Note geben",
+            "egzaminowa\u0107": "pr\u00fcfen",
+            "dyrektor szko\u0142y": "Schulleiter",
+            "dyrektorka szko\u0142y": "Schulleiterin",
+            "pedagog szkolny": "Schulp\u00e4dagoge",
+            "omawia\u0107 temat": "das Thema behandeln",
+            "uczy\u0107": "unterrichten",
+            "wymaga\u0107": "verlangen",
+            "wymagaj\u0105cy": "anspruchsvoll",
+            "autorytatywny": "autorit\u00e4r",
+            "do\u015bwiadczony": "erfahren",
+            "cierpliwy": "geduldig",
+            "sprawiedliwy": "gerecht",
+            "wspania\u0142omy\u015blny": "gro\u00dfz\u00fcgig",
+            "nietolerancyjny": "intolerant",
+            "konsekwentny": "konsequent",
+            "lu\u017any": "locker",
+            "weso\u0142y": "lustig",
+            "pob\u0142a\u017cliwy": "nachsichtig",
+            "nerwowy": "nerv\u00f6s",
+            "mi\u0142y": "nett",
+            "bezwzgl\u0119dny": "r\u00fccksichtslos",
+            "surowy": "streng",
+            "tolerancyjny": "tolerant",
+            "wyrozumia\u0142y": "verst\u00e4ndnisvoll",
+            "godny zaufania": "vertrauensw\u00fcrdig",
+            "roztargniony": "zerstreut"
+        }
+    };
+    var se = [];
+    var d = {};
+    var wn = '';
+    var wnk = '';
+    var p = 0;
+    var m = 0;
+
+
+    window.onload = function () {
+        var k = Object.keys(a);
+        for (var i = 0; i < k.length; i++)
+            document.getElementById('select').innerHTML += "<label><input type='checkbox' value='" + i + "' checked>" + k[i].toLowerCase() + "</label>";
+        document.getElementById('select').innerHTML += "<input type='button' value='rozpocznij' onclick='s()'>";
+    }
+
+    function s() {
+        var c = document.getElementById('select').getElementsByTagName('input');
+        for (var i = 0; i < c.length; i++)
+            if (c[i].checked)
+                se.push(parseInt(c[i].value));
+
+        l();
+    }
+
+    function l() {
+        document.getElementById('select').remove();
+        document.getElementById('game').style.display = 'block';
+
+        document.onkeydown = function (e) {
+            if (e.altKey)
+                switch (e.key) {
+                    case 's':
+                        f('ß');
+                        break;
+                    case 'o':
+                        f('ö');
+                        break;
+                    case 'u':
+                        f('ü');
+                        break;
+                    case 'a':
+                        f('ä');
+                        break;
+                    case 'ArrowRight':
+                        n();
+                        break;
+                }
+        };
+
+        for (var i = 0; i < se.length; i++)
+            Object.assign(d, a[Object.keys(a)[se[i]]]);
+
+        us();
+        sw();
+    }
+
+    function f(a) {
+        document.getElementById('word-i').value += a;
+        document.getElementById('word-i').focus();
+    }
+
+    function sw() {
+        var k = Object.keys(d);
+
+        if (k == 0) {
+            alert('Wygrałeś!');
+            location.reload();
+            return;
+        }
+        var r = k[k.length * Math.random() << 0];
+
+        wn = d[r];
+        wnk = r;
+        document.getElementById('word').innerHTML = r;
+
+    }
+
+    function c() {
+
+        var ans = document.getElementById('word-i').value;
+        document.getElementById('word-i').value = '';
+        var iu = document.getElementById('iu').checked;
+        var id = document.getElementById('id').checked;
+
+        var wnc = wn;
+
+        if (id) {
+            ans = ans.replace('ä', 'a').replace('ö', 'o').replace('ü', 'u').replace('ß', 'ss');
+            wnc = wnc.replace('ä', 'a').replace('ö', 'o').replace('ü', 'u').replace('ß', 'ss');
+        }
+
+        if (ans == wnc || (iu && ans.toLowerCase() == wnc.toLowerCase())) {
+            p++;
+            document.body.id = 'y';
+            delete d[wnk];
+
+        } else {
+            m++;
+            document.body.id = 'n';
+        }
+
+        us();
+        sw();
+    }
+
+    function us() {
+        document.getElementById('correct').innerHTML = p;
+        document.getElementById('incorrect').innerHTML = m;
+        document.getElementById('answer').innerHTML = wn;
+        document.getElementById('left').innerHTML = Object.keys(d).length;
+    }
+
+    function n() {
+        wn = '-';
+        document.getElementById('word-i').value = '';
+        us();
+        document.body.id = '';
+        sw();
+    }
+</script>
+</body>
+</html>
